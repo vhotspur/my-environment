@@ -1,0 +1,7 @@
+
+# Editor
+
+export EDITOR=vim
+export SVN_EDITOR=$EDITOR
+export GIT_PAGER=
+

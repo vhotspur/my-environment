@@ -1,0 +1,4 @@
+#!/bin/sh
+
+atril "$@" >/dev/null 2>&1 &
+

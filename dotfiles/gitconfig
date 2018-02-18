@@ -1,0 +1,14 @@
+[color]
+	diff = auto
+	status = auto
+	branch = auto
+[alias]
+	st = status
+	ci = commit
+	br = branch
+	co = checkout
+	ll = log --format='tformat:%C(yellow)%h%Creset %an (%cr) %C(yellow)%s%Creset' --max-count=20 --first-parent
+	gr = grep -n --color=auto
+[core]
+	editor = vim
+

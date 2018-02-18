@@ -1,0 +1,8 @@
+#!/bin/sh
+
+for i in "$@"; do
+    if ! echo "$i" | grep -q '^/'; then
+        i="$PWD/$i";
+    fi
+    eclipse --launcher.openFile "$i";
+done
