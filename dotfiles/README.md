@@ -10,7 +10,6 @@
 ```
 
 
-
 ## `gitconfig` (`~/.gitconfig`)
 
 ```text

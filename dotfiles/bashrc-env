@@ -5,3 +5,12 @@ export EDITOR=vim
 export SVN_EDITOR=$EDITOR
 export GIT_PAGER=
 
+
+# Prompt
+# Set $MY_ENV_COLOR for colorful prompt.
+# MY_ENV_COLOR='\[\e[1;32m\]'
+
+PS1='\[\e]2;\w\a\]'"$MY_ENV_COLOR"'\w\[\e[0m\]\$'
+if [ -n "$SSH_CLIENT" ]; then
+	PS1="$MY_ENV_COLOR"'[\u@\h \w]\[\e[0m\]\$'
+fi
