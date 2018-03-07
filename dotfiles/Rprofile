@@ -1,0 +1,16 @@
+
+# Use the CZ NIC mirror always
+tmp <- getOption("repos")
+tmp["CRAN"] <- "http://mirrors.nic.cz/R"
+options(repos = tmp)
+
+# Store packages in ~/.local/lib/R/<version>
+tmp <- sprintf("%s/.local/lib/R/%s/%s.%s",
+    Sys.getenv("HOME"),
+    R.version$platform, R.version$major, R.version$minor
+)
+dir.create(tmp, showWarnings=FALSE, recursive=TRUE)
+.libPaths(new=c(tmp, .libPaths()))
+
+rm(tmp)
+

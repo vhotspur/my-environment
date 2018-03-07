@@ -17,3 +17,7 @@
 	path = $MY_PATH/dotfiles/gitconfig
 ```
 
+## `Rprofile` (`~/.Rprofile`)
+
+Just a symlink.
+
