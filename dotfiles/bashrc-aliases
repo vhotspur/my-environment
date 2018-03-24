@@ -26,3 +26,5 @@ alias man='env LANG=C man'
 alias vi='vim'
 alias gitdf='git diff'
 alias gitdfs='git diff --staged'
+alias ssh-add='ssh-add -t 3600'
+
