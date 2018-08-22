@@ -26,10 +26,13 @@ __use_internal() {
 }
 
 use() {
-    if [ "$1" = "help" -o "$1" = "--help" -o "$1" = "-h" -o -z "$1" -o -z "$2" ]; then
+    if [ "$1" = "help" -o "$1" = "--help" -o "$1" = "-h" -o -z "$1" ]; then
         echo "Usage: use alternative version"
     elif ! [ -f "$HOME/.use.rc" ]; then
         echo "Configuration file ~/.use.rc missing."
+    elif [ -z "$2" ]; then
+        __use_alternatives=`sed -n "/^$1"'[ \t]/s#^[^ \t]*[ \t]*\([^ \t]*\).*#\1#p' <~/.use.rc | sort | uniq | paste '-sd '`
+        echo "Alternatives for $1: $__use_alternatives"
     else
         __use_found=false
         while read __use_alt_group __use_alt_name __use_alt_config __use_alt_value; do
