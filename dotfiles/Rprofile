@@ -14,3 +14,12 @@ dir.create(tmp, showWarnings=FALSE, recursive=TRUE)
 
 rm(tmp)
 
+# Wide screen
+wide.screen <- function(cols=NULL) {
+    if (is.null(cols)) {
+        cols <- as.numeric(system("tput cols", intern=TRUE))
+    }
+    options(width=cols)
+}
+
+wide.screen()
