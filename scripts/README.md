@@ -16,3 +16,9 @@ Open files given as arguments in Eclipse.
 ## `opdf`
 
 Run `atril` in background with given file.
+
+
+## `vagrant-ansible-playbook`
+
+Run given Ansible playbook on given Vagrant machine.
+
