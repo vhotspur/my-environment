@@ -51,7 +51,7 @@ yubi() {
         
         if ! ssh-add -l 2>/dev/null | grep -q opensc-pkcs11; then
             echo "Adding PKCS #11 to ssh-agent." >&2
-            ssh-add -s /usr/lib/opensc-pkcs11.so
+            ssh-add -s /usr/lib/opensc-pkcs11.so -t 3600
         fi
     else
         if ssh-add -l 2>/dev/null | grep -q opensc-pkcs11; then
