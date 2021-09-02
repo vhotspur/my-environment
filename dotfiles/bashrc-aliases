@@ -29,3 +29,6 @@ alias gitdf='git diff'
 alias gitdfs='git diff --staged'
 alias ssh-add='ssh-add -t 3600'
 
+podman-oneshot() {
+    podman run --memory 2G --cpus 1 --rm -it "$1" /bin/bash
+}
