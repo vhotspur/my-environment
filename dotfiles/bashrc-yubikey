@@ -22,6 +22,16 @@ _yubikey_start_ssh_agent_if_needed() {
 	fi
 }
 
+ssh-agent-restart() {
+    timeout -k 5s 10s ssh-add -D
+    timeout -k 5s 10s ssh-agent -k
+    pkill ssh-agent
+    pkill -9 ssh-agent
+    pkill -f ssh-pkcs11-helper
+    pkill -9 -f ssh-pkcs11-helper
+    _yubikey_start_ssh_agent
+}
+
 _yubikey_start_ssh_agent_if_needed
 
 yubi() {
