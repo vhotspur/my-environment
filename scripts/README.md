@@ -7,6 +7,9 @@ Add path to this directory to `$PATH`.
 
 Print absolute file path (pass as parameter).
 
+## `baterka`
+
+Print battery percentage from `upower -d`.
 
 ## `eclo`
 

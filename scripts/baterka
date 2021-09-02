@@ -1,0 +1,30 @@
+#!/bin/bash
+
+set -ueo pipefail
+
+expand_header() {
+    local line
+    local header=""
+    while read -r line; do
+        if echo "$line" | grep ':' -q; then
+            echo "$header$line"
+        else
+            header="$line "
+        fi
+    done
+}
+
+trim_whitespace() {
+    sed 's#^[ ]*##'
+}
+
+get_percentage() {
+    upower -i "$1" | expand_header | grep "^battery percentage:" | cut -d: -f 2- | trim_whitespace || true
+}
+
+for dev in $( upower -e ); do
+    percentage="$( get_percentage "$dev" )"
+    if [ -n "$percentage" ]; then
+        echo "$( basename "$dev" ): $( get_percentage "$dev" )"
+    fi
+done
