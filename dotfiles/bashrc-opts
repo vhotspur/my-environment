@@ -1,8 +1,0 @@
-
-# Bash history control settings
-
-export HISTCONTROL=ignoredups
-export HISTFILESIZE=1000000
-shopt -s histappend
-shopt -s no_empty_cmd_completion
-PROMPT_COMMAND='history -a'
