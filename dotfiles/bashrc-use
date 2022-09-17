@@ -19,6 +19,7 @@ __use_internal() {
                 fi
                 if [ "$__use_alt_config" = "env" ]; then
                     eval export "$__use_alt_value"
+                    echo export "$__use_alt_value"
                 fi
                 if [ "$__use_alt_config" = "command" ]; then
                     eval "$__use_alt_value" || true
