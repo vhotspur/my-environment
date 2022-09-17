@@ -28,3 +28,25 @@ Run `atril` in background with given file.
 ## `vagrant-ansible-playbook`
 
 Run given Ansible playbook on given Vagrant machine.
+
+
+## `proxy-switcher-server`
+
+```
+mkdir -p ~/.config/systemd/user/
+cat <<EOF >~/.config/systemd/user/proxy-switcher.service
+[Unit]
+Description=Smart proxy switcher server
+
+[Service]
+ExecStart=$PWD/proxy-switcher-server start
+
+[Install]
+WantedBy=default.target
+
+EOF
+systemctl --user daemon-reload
+systemctl --user start proxy-switcher.service
+systemctl --user enable proxy-switcher.service
+systemctl --user status proxy-switcher.service
+```

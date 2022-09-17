@@ -1,0 +1,83 @@
+#!/bin/bash
+
+set -ueo pipefail
+
+msg() {
+    echo "$( date '+[proxy-switcher %Y-%m-%d %H:%M:%S ]' )" "$@" >&2
+}
+
+config_file="$HOME/.config/proxy-switcher-wpad-url.txt"
+all_direct_js='function FindProxyForURL(url, host) { return "DIRECT"; }'
+
+self="$(realpath $BASH_SOURCE)"
+action="${1:-help}"
+
+handle_request() {
+    local request_header
+
+    read request_header
+
+    msg "Received $request_header"
+
+    if ! echo "$request_header" | grep -q '^GET / HTTP/'; then
+        echo -en "HTTP/1.0 400 Bad request\nContent-Type: text/plain\n\n"
+        echo "Bad request, only GET to / is allowed."
+        exit
+    fi
+
+    echo "HTTP/1.0 200 OK"
+    echo "Server: proxy-switcher-server"
+    echo "Connection: close"
+    echo "Cache-Control:max-age=30, must-revalidate"
+    echo "Content-Type: application/x-ns-proxy-autoconfig"
+    echo
+
+    local actual_url="$( cat "$config_file" 2>/dev/null || true )"
+    local response=""
+    if [ -n "$actual_url" ]; then
+        response="$(
+            env \
+                http_proxy= \
+                https_proxy= \
+                curl --silent "$actual_url" || true
+        )"
+    fi
+    # No external URL but also failsafe
+    if [ -z "$response" ]; then
+        response="$all_direct_js"
+    fi
+
+    echo "$response"
+    echo
+}
+
+case "$action" in
+
+    run-as-request-handler)
+        handle_request
+        ;;
+    start)
+        port_no="${2:-7769}"
+        msg "Starting server, entry http://127.0.0.1:${port_no} as WPAD address."
+        msg "Hit Ctrl-C to terminate."
+        ncat \
+            --listen "$port_no" \
+            --keep-open \
+            --sh-exec "$self run-as-request-handler"
+        ;;
+    none)
+        echo "">"$config_file"
+        msg "Using DIRECT for all requests."
+        ;;
+    wpad)
+        wpad_url="$2"
+        echo "$wpad_url" >"$config_file"
+        msg "Using $wpad_url for actual configuration."
+        ;;
+    *)
+        echo "Usage: $self [help|start|none|wpad]"
+        echo
+        exit 1
+        ;;
+esac
+
