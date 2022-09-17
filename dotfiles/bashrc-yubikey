@@ -3,7 +3,7 @@ SSH_AGENT_ENVIRONMENT="$HOME/.ssh/environment.agent"
 
 _yubikey_start_ssh_agent() {
     echo "Starting SSH agent..." >&2
-    ssh-agent | sed 's/^echo/#echo/' > "$SSH_AGENT_ENVIRONMENT"
+    ssh-agent -P /usr/lib/opensc-pkcs11.so | sed 's/^echo/#echo/' > "$SSH_AGENT_ENVIRONMENT"
     
     chmod 600 "$SSH_AGENT_ENVIRONMENT"
     . "$SSH_AGENT_ENVIRONMENT"
