@@ -17,7 +17,7 @@ alias l='ll -h'
 # Multimedia
 
 alias mp='mplayer'
-alias mpv='mplayer -fs -heartbeat-cmd "xscreensaver-command -deactivate" -softvol-max 250'
+alias mpvid='mplayer -fs -heartbeat-cmd "xscreensaver-command -deactivate" -softvol-max 250'
 
 
 # Miscellaneous
