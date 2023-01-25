@@ -3,7 +3,11 @@
 set -ueo pipefail
 
 msg() {
-    echo "$( date '+[proxy-switcher %Y-%m-%d %H:%M:%S ]' )" "$@" >&2
+    if [ -n "${SYSTEMD_EXEC_PID:-}" ]; then
+        echo "$@" >&2
+    else
+        echo "$( date '+[proxy-switcher %Y-%m-%d %H:%M:%S ]' )" "$@" >&2
+    fi
 }
 
 config_file="$HOME/.config/proxy-switcher-wpad-url.txt"
@@ -51,10 +55,30 @@ handle_request() {
     echo
 }
 
+print_systemd_config() {
+    echo '[Unit]'
+    echo 'Description=Automatic proxy switcher service'
+    echo
+    echo '[Service]'
+    echo "ExecStart=$1 start"
+    echo "WorkingDirectory=$HOME"
+    echo
+    echo '[Install]'
+    echo 'WantedBy=default.target'
+}
+
 case "$action" in
 
     run-as-request-handler)
         handle_request
+        ;;
+    install)
+        msg "Installing as systemd user service..."
+        mkdir -p "$HOME/.config/systemd/user/"
+        print_systemd_config "$(command -v "$0" )" >"$HOME/.config/systemd/user/proxy-switcher-server.service"
+        msg " ...installed."
+        msg "Next step? systemctl --user enable proxy-switcher-server"
+        msg "Next step? systemctl --user start proxy-switcher-server"
         ;;
     start)
         port_no="${2:-7769}"
@@ -75,8 +99,8 @@ case "$action" in
         msg "Using $wpad_url for actual configuration."
         ;;
     *)
-        echo "Usage: $self [help|start|none|wpad]"
-        echo
+        echo "Usage: $self [help|start|none|wpad|install]" >&2
+        echo >&2
         exit 1
         ;;
 esac
