@@ -1,9 +1,10 @@
 
 SSH_AGENT_ENVIRONMENT="$HOME/.ssh/environment.agent"
+OPENSC_PKCS_PATH=/usr/lib/opensc-pkcs11.so
 
 _yubikey_start_ssh_agent() {
     echo "Starting SSH agent..." >&2
-    ssh-agent -P /usr/lib/opensc-pkcs11.so | sed 's/^echo/#echo/' > "$SSH_AGENT_ENVIRONMENT"
+    ssh-agent -P "$OPENSC_PKCS_PATH" | sed 's/^echo/#echo/' > "$SSH_AGENT_ENVIRONMENT"
     
     chmod 600 "$SSH_AGENT_ENVIRONMENT"
     . "$SSH_AGENT_ENVIRONMENT"
@@ -43,20 +44,21 @@ yubi() {
         if [ "$SSH_AGENT_YUBIKEY_USB" != "$__YUBI_USB" ]; then
             if ssh-add -l 2>/dev/null | grep -q opensc-pkcs11; then
                 echo "Clearing old PKCS #11 key from ssh-agent." >&2
-                ssh-add -e /usr/lib/opensc-pkcs11.so
+                ssh-add -e "$OPENSC_PKCS_PATH"
             fi
         fi
         
         export SSH_AGENT_YUBIKEY_USB="$__YUBI_USB"
         
         if ! ssh-add -l 2>/dev/null | grep -q opensc-pkcs11; then
+            ssh-add -e "$OPENSC_PKCS_PATH" &>/dev/null
             echo "Adding PKCS #11 to ssh-agent." >&2
-            ssh-add -s /usr/lib/opensc-pkcs11.so -t 3600
+            ssh-add -s "$OPENSC_PKCS_PATH" -t 3600
         fi
     else
         if ssh-add -l 2>/dev/null | grep -q opensc-pkcs11; then
             echo "Clearing PKCS #11 key from ssh-agent." >&2
-            ssh-add -e /usr/lib/opensc-pkcs11.so
+            ssh-add -e "$OPENSC_PKCS_PATH"
         fi
     fi
     
