@@ -10,6 +10,10 @@
 	ll = log --format='tformat:%C(yellow)%h%Creset %an (%cr) %C(yellow)%s%Creset' --max-count=20 --first-parent
 	lg = log --format='tformat:%C(yellow)%h%Creset %an (%cr) %C(yellow)%s%Creset' --max-count=20 --graph
 	gr = grep -n --color=auto
+	ff = merge --ff-only
+	ri = rebase --interactive
+	parent = git log --pretty=%P -n 2
+	last = show --name-status
 [core]
 	editor = vim
 
