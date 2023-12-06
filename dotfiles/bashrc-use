@@ -1,6 +1,7 @@
 #!/bin/sh
 
 __use_internal() {
+    local __use_alt_group __use_alt_name __use_alt_config __use_alt_value
     # Remove from PATH
     while read __use_alt_group __use_alt_name __use_alt_config __use_alt_value; do
         if [ "$__use_alt_group" = "$1" ]; then
@@ -30,6 +31,8 @@ __use_internal() {
 }
 
 use() {
+    local __use_alt_group __use_alt_name __use_alt_config __use_alt_value __use_found
+
     if [ "$1" = "help" -o "$1" = "--help" -o "$1" = "-h" -o -z "$1" ]; then
         echo "Usage: use alternative version"
     elif ! [ -f "$HOME/.use.rc" ]; then
