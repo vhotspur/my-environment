@@ -30,27 +30,34 @@ __use_internal() {
     done <~/.use.rc
 }
 
+__use_alternative_exists() {
+    local alt_group alt_name
+    while read alt_group alt_name _; do
+        if [ "$alt_group" = "$1" ]; then
+            if [ "$alt_name" = "$2" ]; then
+                return 0
+            fi
+        fi
+    done <~/.use.rc
+    return 1
+}
+
 use() {
-    local __use_alt_group __use_alt_name __use_found
+    local __use_alt_group __use_alt_name __use_alternatives
 
     if [ "$1" = "help" -o "$1" = "--help" -o "$1" = "-h" -o -z "$1" ]; then
         echo "Usage: use alternative version"
     elif ! [ -f "$HOME/.use.rc" ]; then
         echo "Configuration file ~/.use.rc missing."
     elif [ -z "$2" ]; then
-        __use_alternatives=`sed -n "/^$1"'[ \t]/s#^[^ \t]*[ \t]*\([^ \t]*\).*#\1#p' <~/.use.rc | sort | uniq | paste '-sd '`
-        echo "Alternatives for $1: $__use_alternatives"
+        if __use_alternative_exists "_" "$1"; then
+            __use_internal "_" "$1"
+        else
+            __use_alternatives=`sed -n "/^$1"'[ \t]/s#^[^ \t]*[ \t]*\([^ \t]*\).*#\1#p' <~/.use.rc | sort | uniq | paste '-sd '`
+            echo "Alternatives for $1: $__use_alternatives"
+        fi
     else
-        __use_found=false
-        while read __use_alt_group __use_alt_name _; do
-            if [ "$__use_alt_group" = "$1" ]; then
-                if [ "$__use_alt_name" = "$2" ]; then
-                    __use_found=true
-                fi
-            fi
-        done <~/.use.rc
-
-        if ! $__use_found; then
+        if ! __use_alternative_exists "$1" "$2"; then
             echo "Alternative $1 ($2) not found"
         else
             __use_internal "$1" "$2"
