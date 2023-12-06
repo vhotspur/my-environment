@@ -9,7 +9,7 @@ __use_internal() {
             fi
         fi
     done <~/.use.rc
-    
+
     # Set PATH and other envs
     while read __use_alt_group __use_alt_name __use_alt_config __use_alt_value; do
         if [ "$__use_alt_group" = "$1" ]; then
@@ -46,7 +46,7 @@ use() {
                 fi
             fi
         done <~/.use.rc
-        
+
         if ! $__use_found; then
             echo "Alternative $1 ($2) not found"
         else
