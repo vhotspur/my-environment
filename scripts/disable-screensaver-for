@@ -1,0 +1,35 @@
+#!/bin/sh
+
+as_iso() {
+    date "--date=@$1" "+%Y-%m-%d %H:%M"
+}
+
+action_x11() {
+    xscreensaver-command -deactivate
+}
+
+action_xfce4() {
+    xfce4-screensaver-command --poke
+}
+
+duration="${1:-10}"
+
+now_ts="$( date '+%s' )"
+until_ts="$(( now_ts + duration * 60 ))"
+
+poke_command=x11
+if ! xscreensaver-command -time 2>/dev/null >/dev/null; then
+    poke_command=xfce4
+fi
+
+echo "It is $( as_iso "$now_ts" ) and $poke_command screensaver will be inactive until $( as_iso "$until_ts" )." >&2
+
+(
+    while [ "$( date '+%s' )" -lt "$until_ts" ]; do
+        sleep 3
+        "action_$poke_command"
+    done
+) &
+pid="$!"
+
+echo "Forked into background, use kill $pid to disable."
