@@ -13,7 +13,7 @@
 	ff = merge --ff-only
 	ri = rebase --interactive
 	parent = git log --pretty=%P -n 2
-	last = show --name-status
+	last = show --format='%C(yellow)Commit: %H%Creset%d%nAuthor: %an <%ae>%nDate:   %aI (%ah)%n%n%B'
 [core]
 	editor = vim
 
