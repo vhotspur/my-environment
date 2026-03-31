@@ -22,4 +22,4 @@ for i in ~/.ssh/*.pub; do
             printf '%q\n' "$private_key"
         fi
     fi
-done | xargs -r echo ssh-add -t "$key_lifetime"
+done | xargs -r ssh-add -t "$key_lifetime"
