@@ -7,6 +7,7 @@
 	ci = commit
 	br = branch
 	co = checkout
+	fe = fetch
 	ll = log --format='tformat:%C(yellow)%h%Creset %an (%cr) %C(yellow)%s%Creset' --max-count=20 --first-parent
 	lg = log --format='tformat:%C(yellow)%h%Creset %an (%cr) %C(yellow)%s%Creset' --max-count=20 --graph
 	gr = grep -n --color=auto
@@ -14,6 +15,7 @@
 	ri = rebase --interactive
 	parent = git log --pretty=%P -n 2
 	last = show --format='%C(yellow)Commit: %H%Creset%d%nAuthor: %an <%ae>%nDate:   %aI (%ah)%n%n%B'
+	sw = switch
 [core]
 	editor = vim
 
