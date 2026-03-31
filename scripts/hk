@@ -1,0 +1,25 @@
+#!/bin/bash
+
+set -uoe pipefail
+
+key_lifetime=3600
+
+if [ "${1:-}" = "-d" ]; then
+    exec ssh-add -D
+    exit
+fi
+
+if lsusb -d "32a3:3201" >/dev/null; then
+    printf 'Adding GoTrust Idem Key ...\n'
+    ssh-add -t "$key_lifetime" -K
+fi
+
+for i in ~/.ssh/*.pub; do
+    [ -e "$i" ] || continue
+    if ! ssh-add -L | cut -d ' ' -f 1-2 | grep -q -x -F "$( cut -d ' ' -f 1-2 < "$i" )"; then
+        private_key="$( dirname "$i" )/$( basename "$i" .pub )"
+        if [ -e "$private_key" ]; then
+            printf '%q\n' "$private_key"
+        fi
+    fi
+done | xargs -r echo ssh-add -t "$key_lifetime"
