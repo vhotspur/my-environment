@@ -2,6 +2,10 @@
 
 set -uoe pipefail
 
+msg() {
+    printf '[hk] %s\n' "$*" >&2
+}
+
 key_lifetime=3600
 
 if [ "${1:-}" = "-d" ]; then
@@ -9,17 +13,55 @@ if [ "${1:-}" = "-d" ]; then
     exit
 fi
 
-if lsusb -d "32a3:3201" >/dev/null; then
-    printf 'Adding GoTrust Idem Key ...\n'
-    ssh-add -t "$key_lifetime" -K
+if [ "${1:-}" = "-l" ]; then
+    exec ssh-add -L
+    exit
 fi
 
-for i in ~/.ssh/*.pub; do
+export SSH_ASKPASS_REQUIRE=never
+
+has_hardware_key=false
+has_gotrust_idem_key=false
+if lsusb -d "32a3:3201" >/dev/null; then
+    has_hardware_key=true
+    has_gotrust_idem_key=true
+fi
+
+declare -a keys=()
+for i in ~/.ssh/id*.pub; do
     [ -e "$i" ] || continue
     if ! ssh-add -L | cut -d ' ' -f 1-2 | grep -q -x -F "$( cut -d ' ' -f 1-2 < "$i" )"; then
-        private_key="$( dirname "$i" )/$( basename "$i" .pub )"
+        key_name="$( basename "$i" .pub )"
+        private_key="$( dirname "$i" )/$key_name"
+
+        # Skip sk-* keys when no token is inserted
+        if ! $has_hardware_key; then
+            if cat "$i" | grep -q '^sk-'; then
+                continue
+            fi
+        fi
+
         if [ -e "$private_key" ]; then
-            printf '%q\n' "$private_key"
+            keys+=("$private_key")
         fi
     fi
-done | xargs -r ssh-add -t "$key_lifetime"
+done
+
+something_added=false
+
+if [ "${#keys[@]}" -gt 0 ]; then
+    msg 'Adding local keys ...'
+    ssh-add -t "$key_lifetime" "${keys[@]}"
+    something_added=true
+fi
+
+if $has_gotrust_idem_key; then
+    msg 'Adding GoTrust Idem Key ...'
+    ssh-add -t "$key_lifetime" -K
+    something_added=true
+fi
+
+if ! $something_added; then
+    msg 'All keys are already loaded in the agent.'
+fi
+
